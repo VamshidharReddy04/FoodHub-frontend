@@ -2,31 +2,27 @@ import React, { createContext, useReducer, useContext } from 'react';
 
 const CartStateContext = createContext(null);
 const CartDispatchContext = createContext(null);
-
 const initialState = { cartItems: [] };
-
 function reducer(state, action) {
   switch (action.type) {
+    // Add item to cart; if already exists (by _id and size), increment qty
     case 'ADD_TO_CART': {
       const item = action.payload || {};
       const qtyToAdd = Number(item.qty) || 1;
-
       // match by _id and size (if provided)
       const matchIndex = state.cartItems.findIndex(
         (ci) => ci._id === item._id && (item.size ? ci.size === item.size : true)
       );
-
       if (matchIndex !== -1) {
         const updated = state.cartItems.map((ci, idx) =>
           idx === matchIndex ? { ...ci, qty: Number(ci.qty || 0) + qtyToAdd } : ci
         );
         return { ...state, cartItems: updated };
       }
-
       const newItem = { ...item, qty: qtyToAdd };
       return { ...state, cartItems: [...state.cartItems, newItem] };
     }
-
+  // Remove item from cart by id and optional size, or by index if provided
     case 'REMOVE_FROM_CART': {
       const { id, size } = action.payload || {};
       if (typeof action.index === 'number') {
@@ -44,15 +40,13 @@ function reducer(state, action) {
       }
       return state;
     }
-
+    // Clear entire cart
     case 'CLEAR_CART':
       return { ...state, cartItems: [] };
-
     default:
       return state;
   }
 }
-
 export function CartProvider({ children }) {
   const [state, dispatch] = useReducer(reducer, initialState);
   return (

@@ -8,7 +8,6 @@ import MyOrder from "./screens/MyOrder";
 import { CartProvider } from './components/ContextReducer';
 import WelcomePopup from './components/WelcomePopup';
 import React, { useState, useEffect } from 'react';
-import RequireAuth from './components/RequireAuth';
 
 function App() {
   const [showWelcome, setShowWelcome] = useState(false);
@@ -26,7 +25,7 @@ function App() {
   useEffect(() => {
     const handler = (e) => {
       const force = !!(e && e.detail && e.detail.force);
-      if (force) localStorage.removeItem('welcomeSeen'); // clear persisted flag then show
+      if (force) localStorage.removeItem('welcomeSeen'); 
       setShowWelcome(true);
     };
     window.addEventListener('showWelcome', handler);
@@ -40,8 +39,8 @@ function App() {
         <div>
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/cart" element={<RequireAuth><MyCart /></RequireAuth>} />
-            <Route path="/order" element={<RequireAuth><MyOrder /></RequireAuth>} />
+            <Route path="/cart" element={<MyCart />} />
+            <Route path="/order" element={<MyOrder />} />
             <Route path="/login" element={<Login />} />
             <Route path="/createuser" element={<SignUp />} />
           </Routes>
