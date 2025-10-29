@@ -13,6 +13,7 @@
  */
 
 // Get the API base URL from environment variable or use localhost as fallback
+// Empty string is treated as falsy and will use the default fallback
 const API_BASE_URL = process.env.REACT_APP_API_URL || process.env.VITE_API_URL || 'http://localhost:5000';
 
 /**
