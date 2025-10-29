@@ -1,5 +1,6 @@
 import React from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { signup } from '../api';
 
 export default function SignUp() {
     const [credentials,setCredentials]=React.useState({name:"",email:"",password:"",geolocation:""});
@@ -8,16 +9,7 @@ export default function SignUp() {
         e.preventDefault();
         console.log('Submitting signup', credentials);
         try{
-            const response= await fetch('http://localhost:5000/api/createuser', {
-                method:'POST',
-                headers:{ 'Content-Type':'application/json' },
-                body:JSON.stringify({name:credentials.name,email:credentials.email,password:credentials.password,location:credentials.geolocation})
-            });
-            if(!response.ok){
-                const text=await response.text();
-                throw new Error(`Server ${response.status}: ${text}`);
-            }
-            const json = await response.json();
+            const json = await signup(credentials.name, credentials.email, credentials.password, credentials.geolocation);
             console.log('Signup response', json);
             // robust extraction of user id / token from multiple possible response shapes
             const token = json?.createdUserId ?? json?.id ?? json?._id ?? json?.userId ?? json?.token ?? json?.authToken ?? json?.user?.id;

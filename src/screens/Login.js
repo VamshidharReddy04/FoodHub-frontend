@@ -1,5 +1,6 @@
 import React,{useState} from 'react'
 import { Link, useNavigate } from 'react-router-dom';
+import { login, saveToken } from '../api';
 export default function Login() {
     const navigate = useNavigate();
   const [credentials,setCredentials]=useState({email:"",password:""});
@@ -7,32 +8,21 @@ export default function Login() {
       e.preventDefault();
       console.log('Submitting login', credentials);
       try{
-          const response= await fetch('http://localhost:5000/api/login', {
-          method:'POST',
-          headers:{
-              'Content-Type':'application/json'
-          },
-          body:JSON.stringify({email:credentials.email,password:credentials.password})
-      });
-      if(!response.ok){
-          const text=await response.text();
-          throw new Error(`Server ${response.status}: ${text}`);
-      }
-      const json=await response.json();
-      console.log('Login response', json);
-      if(json.success){
-          alert('Login Successful');
-            localStorage.setItem('authToken',json.authToken);
-            console.log(localStorage.getItem('authToken'));
-            localStorage.setItem('userToken', json.id || json._id || json.token);
-            localStorage.setItem('userName', json.name || '');
-            localStorage.setItem('welcomeSeen', '1'); // optional: hide welcome popup after login
-            // notify Navbar to re-render
-            window.dispatchEvent(new Event('authChange'));
-          navigate("/");
-      }else{
-          alert('Login Failed');
-      }
+          const json = await login(credentials.email, credentials.password);
+          console.log('Login response', json);
+          if(json.success){
+              alert('Login Successful');
+              saveToken(json.authToken);
+              console.log(localStorage.getItem('authToken'));
+              localStorage.setItem('userToken', json.id || json._id || json.token);
+              localStorage.setItem('userName', json.name || '');
+              localStorage.setItem('welcomeSeen', '1'); // optional: hide welcome popup after login
+              // notify Navbar to re-render
+              window.dispatchEvent(new Event('authChange'));
+              navigate("/");
+          }else{
+              alert('Login Failed');
+          }
       }catch(err){
           console.error('Login fetch error',err);
           alert('Failed to submit login: '+err.message);
