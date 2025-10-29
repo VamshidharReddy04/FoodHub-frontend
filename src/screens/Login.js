@@ -1,5 +1,7 @@
 import React,{useState} from 'react'
 import { Link, useNavigate } from 'react-router-dom';
+import { login } from '../api';
+
 export default function Login() {
     const navigate = useNavigate();
   const [credentials,setCredentials]=useState({email:"",password:""});
@@ -7,19 +9,11 @@ export default function Login() {
       e.preventDefault();
       console.log('Submitting login', credentials);
       try{
-          const response= await fetch('http://localhost:5000/api/login', {
-          method:'POST',
-          headers:{
-              'Content-Type':'application/json'
-          },
-          body:JSON.stringify({email:credentials.email,password:credentials.password})
-      });
-      if(!response.ok){
-          const text=await response.text();
-          throw new Error(`Server ${response.status}: ${text}`);
-      }
-      const json=await response.json();
-      console.log('Login response', json);
+          const json = await login({
+              email: credentials.email,
+              password: credentials.password
+          });
+          console.log('Login response', json);
       if(json.success){
           alert('Login Successful');
             localStorage.setItem('authToken',json.authToken);
