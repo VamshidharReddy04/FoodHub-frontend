@@ -3,6 +3,7 @@ import Navbar from '../components/Navbar';
 import Cards from '../components/Cards';
 import Footer from '../components/Footer';
 import Carousel from '../components/carousel';
+import { getFoodItems } from '../api';
 
 export default function Home() {
   const [foodItems, setFoodItems] = useState([]);
@@ -14,13 +15,7 @@ export default function Home() {
   const loadData = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:5000/api/foodData', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({}),
-      });
-      if (!response.ok) throw new Error(`Fetch failed ${response.status}`);
-      const data = await response.json();
+      const data = await getFoodItems();
       const items = Array.isArray(data) ? data[0] : (Array.isArray(data?.food_items) ? data.food_items : []);
       const catData = Array.isArray(data) ? data[1] : (Array.isArray(data?.foodCategory) ? data.foodCategory : []);
       setFoodItems(items || []);
